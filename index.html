@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f4f7, #d6e4e5);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh; /* Ensure the body takes full height */
+            padding-top: 50px; /* Prevent heading overlap */
+            text-align: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .container h1 {
+            font-size: 2.5rem;
+            color: #4CAF50;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .container input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            margin-bottom: 20px;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .container input[type="text"]:focus {
+            border-color: #45a049;
+            box-shadow: 0 0 5px rgba(72, 163, 80, 0.8);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 1.2rem;
+        }
+
+        .result span {
+            font-weight: bold;
+        }
+
+        /* Add color for negative sentiment */
+        .negative {
+            color: red;
+        }
+
+        .history {
+            margin-top: 30px;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .history table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        .history th, .history td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 1rem;
+        }
+
+        .history th {
+            background-color: #f2f2f2;
+        }
+
+        .history tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .chart-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        img {
+            width: 60%;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Moved the main heading inside the container -->
+        <h1>Sentiment Analysis</h1>
+
+        <form method="POST" action="/predict">
+            <input type="text" name="sentence" placeholder="Enter a sentence..." required>
+            <button type="submit">Analyze Sentiment</button>
+        </form>
+
+        {% if sentence %}
+            <div class="result">
+                <p>Sentence: <span>{{ sentence }}</span></p>
+                <p class="result-text {% if sentiment == 'Negative' %}negative{% endif %}">
+                    Predicted Sentiment: <span>{{ sentiment }}</span>
+                </p>
+            </div>
+        {% endif %}
+
+        <div class="result">
+            <p>Model Accuracy: <span>{{ accuracy * 100 }}%</span></p>
+        </div>
+
+        <div class="history">
+            <h3>Prediction History</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sentence</th>
+                        <th>Predicted Sentiment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in history %}
+                        <tr>
+                            <td>{{ entry[0] }}</td>
+                            <td>{{ entry[1] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="chart-container">
+            <h3>Sentiment Distribution</h3>
+            {% if chart_data %}
+                <img src="data:image/png;base64,{{ chart_data }}" alt="Sentiment Distribution Chart">
+            {% else %}
+                <p>Could not generate chart.</p>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>
